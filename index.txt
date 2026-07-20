@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sun Shine Garage — Umm Ramool, Dubai</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#201C18;
+    --bg-alt:#2A2420;
+    --surface:#332B25;
+    --surface2:#3D342C;
+    --amber:#E7A33E;
+    --amber-dim:#C4822A;
+    --steel:#7C99AC;
+    --cream:#F4EEE2;
+    --muted:#B7AB9B;
+    --line: rgba(244,238,226,0.12);
+    --line-strong: rgba(244,238,226,0.22);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--cream);
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Oswald',sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+    line-height:1.05;
+  }
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  a{color:inherit;text-decoration:none;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px;}
+  @media(prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+  }
+
+  /* ---------- Hazard stripe divider ---------- */
+  .hazard{
+    height:10px;
+    width:100%;
+    background: repeating-linear-gradient(135deg, var(--amber), var(--amber) 14px, var(--bg) 14px, var(--bg) 28px);
+    opacity:0.9;
+  }
+
+  /* ---------- Garage door load overlay ---------- */
+  #door-overlay{
+    position:fixed; inset:0; z-index:9999;
+    display:flex; flex-direction:column;
+    pointer-events:none;
+  }
+  #door-overlay .slat{
+    flex:1;
+    background:#17130F;
+    border-top:1px solid rgba(0,0,0,0.35);
+    transform:translateY(0);
+    animation:lift 0.72s cubic-bezier(.61,.02,.34,1) forwards;
+  }
+  #door-overlay .slat::after{
+    content:"";
+    display:block;
+    height:100%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.15));
+  }
+  @keyframes lift{
+    to{ transform:translateY(-100%); }
+  }
+  #door-overlay .brand{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    text-align:center;
+    animation:doorbrand-out 0.5s ease forwards;
+    animation-delay:0.55s;
+  }
+  #door-overlay .brand span{
+    font-family:'Oswald',sans-serif;
+    font-size:15px;
+    letter-spacing:0.35em;
+    color:var(--amber);
+  }
+  @keyframes doorbrand-out{
+    to{opacity:0;}
+  }
+
+  /* ---------- Nav ---------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:500;
+    padding:22px 0;
+    transition:padding 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+    border-bottom:1px solid transparent;
+  }
+  header.scrolled{
+    padding:14px 0;
+    background:rgba(32,28,24,0.92);
+    backdrop-filter:blur(8px);
+    border-color:var(--line);
+  }
+  nav.wrap{display:flex; align-items:center; justify-content:space-between;}
+  .logo{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Oswald',sans-serif;
+    font-size:18px; letter-spacing:0.06em;
+    font-weight:600;
+  }
+  .logo .dot{width:9px;height:9px;border-radius:50%;background:var(--amber); box-shadow:0 0 10px var(--amber);}
+  .navlinks{display:flex; gap:34px; font-size:13.5px; letter-spacing:0.04em; text-transform:uppercase; font-weight:500;}
+  .navlinks a{opacity:0.8; position:relative; padding-bottom:4px; transition:opacity 0.25s;}
+  .navlinks a:hover{opacity:1;}
+  .navlinks a::after{
+    content:""; position:absolute; left:0; bottom:0; height:1.5px; width:0;
+    background:var(--amber); transition:width 0.25s ease;
+  }
+  .navlinks a:hover::after{width:100%;}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:12px 22px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px; letter-spacing:0.06em; text-transform:uppercase;
+    border-radius:2px; font-weight:500;
+    transition:transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+  .btn-amber{background:var(--amber); color:#201C18;}
+  .btn-amber:hover{transform:translateY(-2px); box-shadow:0 8px 20px rgba(231,163,62,0.35);}
+  .btn-ghost{border:1px solid var(--line-strong); color:var(--cream);}
+  .btn-ghost:hover{border-color:var(--amber); color:var(--amber);}
+  .navcta{display:flex; gap:12px;}
+  .navburger{display:none;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex; align-items:center;
+    padding-top:120px; padding-bottom:80px;
+    background:
+      radial-gradient(ellipse 900px 500px at 85% 10%, rgba(231,163,62,0.13), transparent 60%),
+      linear-gradient(180deg, var(--bg) 0%, #1A1611 100%);
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:64px 64px;
+    opacity:0.35;
+    mask-image:linear-gradient(180deg, black, transparent 75%);
+    pointer-events:none;
+  }
+  .hero-grid{
+    position:relative; z-index:2;
+    display:grid; grid-template-columns:1.15fr 0.85fr; gap:60px; align-items:center;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--amber); margin-bottom:22px;
+  }
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--amber);}
+  .hero h1{
+    font-size:clamp(40px, 5.4vw, 74px);
+    color:var(--cream);
+    margin-bottom:22px;
+  }
+  .hero h1 em{
+    font-style:normal; color:var(--amber);
+    position:relative;
+  }
+  .hero p.lead{
+    font-size:17px; line-height:1.7; color:var(--muted);
+    max-width:480px; margin-bottom:34px;
+  }
+  .hero-actions{display:flex; gap:16px; flex-wrap:wrap; margin-bottom:44px;}
+  .rating-row{display:flex; align-items:center; gap:14px;}
+  .stars{color:var(--amber); font-size:16px; letter-spacing:2px;}
+  .rating-row .rn{font-family:'Oswald',sans-serif; font-size:20px; color:var(--cream);}
+  .rating-row .rs{font-size:13px; color:var(--muted);}
+
+  /* dashboard-card in hero */
+  .gauge-card{
+    position:relative;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:30px;
+  }
+  .gauge-card .tag{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--muted); margin-bottom:18px; display:flex; justify-content:space-between;
+  }
+  .gauge-card .tag .live{color:var(--amber);}
+  .gauge-row{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding:14px 0; border-bottom:1px solid var(--line);
+  }
+  .gauge-row:last-child{border-bottom:none;}
+  .gauge-row .k{font-size:13px; color:var(--muted);}
+  .gauge-row .v{font-family:'IBM Plex Mono',monospace; font-size:20px; color:var(--cream);}
+  .gauge-row .v.amber{color:var(--amber);}
+
+  /* ---------- Reveal on scroll ---------- */
+  .reveal{opacity:0; transform:translateY(28px); transition:opacity 0.7s ease, transform 0.7s ease;}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  .stagger > *{transition-delay:calc(var(--i, 0) * 0.09s);}
+
+  /* ---------- Section shell ---------- */
+  section{padding:110px 0;}
+  .section-head{max-width:640px; margin-bottom:60px;}
+  .section-head .eyebrow{margin-bottom:14px;}
+  .section-head h2{font-size:clamp(30px,3.6vw,44px); color:var(--cream);}
+  .section-head p{color:var(--muted); font-size:15.5px; margin-top:16px; line-height:1.7;}
+
+  /* ---------- Stats bar ---------- */
+  .stats{
+    background:var(--bg-alt);
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .stats .wrap{
+    display:grid; grid-template-columns:repeat(4,1fr);
+    padding:50px 32px;
+  }
+  .stat{text-align:center; border-right:1px solid var(--line); padding:0 10px;}
+  .stat:last-child{border-right:none;}
+  .stat .num{font-family:'IBM Plex Mono',monospace; font-size:clamp(26px,3.4vw,40px); color:var(--amber);}
+  .stat .lbl{font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-top:8px;}
+
+  /* ---------- Services ---------- */
+  .svc-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line);}
+  .svc-card{
+    background:var(--bg);
+    padding:34px 28px;
+    transition:background 0.3s ease, transform 0.3s ease;
+  }
+  .svc-card:hover{background:var(--surface); transform:translateY(-4px);}
+  .svc-card .ico{width:34px; height:34px; color:var(--amber); margin-bottom:22px;}
+  .svc-card h3{font-size:16px; color:var(--cream); margin-bottom:10px; letter-spacing:0.02em;}
+  .svc-card p{font-size:13.5px; color:var(--muted); line-height:1.6;}
+  .svc-card .n{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--amber-dim); margin-bottom:14px; display:block;}
+
+  /* ---------- About ---------- */
+  .about{
+    display:grid; grid-template-columns:0.9fr 1.1fr; gap:70px; align-items:center;
+  }
+  .about-visual{
+    position:relative; aspect-ratio:1/1.05;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:6px;
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  .about-visual svg{width:60%; height:60%; color:var(--amber); opacity:0.9;}
+  .about-visual::before{
+    content:"EST. IN TRUST"; position:absolute; top:20px; left:20px;
+    font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; color:var(--muted);
+  }
+  .about-visual::after{
+    content:""; position:absolute; inset:0;
+    background:repeating-linear-gradient(135deg, var(--amber) 0 10px, transparent 10px 20px);
+    opacity:0.05;
+  }
+  .about-copy p{color:var(--muted); font-size:16px; line-height:1.8; margin-bottom:22px;}
+  .checklist{list-style:none; margin-top:30px; display:flex; flex-direction:column; gap:16px;}
+  .checklist li{display:flex; gap:14px; font-size:14.5px; color:var(--cream); align-items:flex-start;}
+  .checklist .mark{
+    flex:none; width:20px; height:20px; border-radius:50%;
+    border:1px solid var(--amber); color:var(--amber);
+    display:flex; align-items:center; justify-content:center; font-size:11px; margin-top:1px;
+  }
+
+  /* ---------- Testimonials ---------- */
+  .testi-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
+  .testi-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:6px;
+    padding:30px; display:flex; flex-direction:column; gap:18px;
+  }
+  .testi-card .stars{font-size:13px;}
+  .testi-card p{font-size:14.5px; line-height:1.75; color:var(--cream); flex:1;}
+  .testi-foot{display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--line); padding-top:16px;}
+  .testi-foot .name{font-size:13px; font-weight:600;}
+  .testi-foot .meta{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--muted);}
+
+  /* ---------- CTA band ---------- */
+  .ctaband{
+    background:linear-gradient(120deg, #2C2419, #241F1A);
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    text-align:center;
+  }
+  .ctaband h2{font-size:clamp(28px,4vw,46px); margin-bottom:18px;}
+  .ctaband p{color:var(--muted); margin-bottom:34px; font-size:15.5px;}
+  .cta-actions{display:flex; gap:16px; justify-content:center; flex-wrap:wrap;}
+
+  /* ---------- Footer ---------- */
+  footer{padding:70px 0 34px;}
+  .foot-grid{display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:50px; padding-bottom:50px; border-bottom:1px solid var(--line);}
+  .foot-grid h4{font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:18px;}
+  .foot-grid p, .foot-grid a{font-size:14px; color:var(--cream); line-height:2;}
+  .foot-grid .flinks{display:flex; flex-direction:column;}
+  .foot-grid .flinks a{opacity:0.85; transition:opacity 0.2s;}
+  .foot-grid .flinks a:hover{opacity:1; color:var(--amber);}
+  .foot-bottom{display:flex; justify-content:space-between; padding-top:26px; font-size:12.5px; color:var(--muted); flex-wrap:wrap; gap:10px;}
+
+  /* ---------- Responsive ---------- */
+  @media(max-width:980px){
+    .navlinks{display:none;}
+    .hero-grid{grid-template-columns:1fr;}
+    .about{grid-template-columns:1fr;}
+    .svc-grid{grid-template-columns:repeat(2,1fr);}
+    .stats .wrap{grid-template-columns:repeat(2,1fr); row-gap:30px;}
+    .stat{border-right:none; border-bottom:1px solid var(--line); padding-bottom:24px;}
+    .testi-grid{grid-template-columns:1fr;}
+    .foot-grid{grid-template-columns:1fr; gap:30px;}
+  }
+  @media(max-width:560px){
+    .svc-grid{grid-template-columns:1fr;}
+    section{padding:70px 0;}
+    .wrap{padding:0 20px;}
+  }
+</style>
+</head>
+<body>
+
+  <!-- Garage door load animation -->
+  <div id="door-overlay">
+    <div class="brand"><span>SUN SHINE GARAGE</span></div>
+    <div class="slat" style="animation-delay:0.28s"></div>
+    <div class="slat" style="animation-delay:0.24s"></div>
+    <div class="slat" style="animation-delay:0.20s"></div>
+    <div class="slat" style="animation-delay:0.16s"></div>
+    <div class="slat" style="animation-delay:0.12s"></div>
+    <div class="slat" style="animation-delay:0.08s"></div>
+    <div class="slat" style="animation-delay:0.04s"></div>
+    <div class="slat" style="animation-delay:0s"></div>
+  </div>
+
+  <header id="siteHeader">
+    <nav class="wrap">
+      <div class="logo"><span class="dot"></span>SUN SHINE GARAGE</div>
+      <div class="navlinks">
+        <a href="#services">Services</a>
+        <a href="#about">About</a>
+        <a href="#reviews">Reviews</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="navcta">
+        <a class="btn btn-amber" href="tel:+971527222949">Call Now</a>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">Umm Ramool · Dubai</div>
+        <h1>Honest auto care, <em>built on trust</em></h1>
+        <p class="lead">A family-run garage in Umm Ramool handling dent repair, paint, AC, mechanical and electrical work — the kind of place regulars have brought their cars back to for over a decade.</p>
+        <div class="hero-actions">
+          <a class="btn btn-amber" href="tel:+971527222949">Call +971 52 722 2949</a>
+          <a class="btn btn-ghost" href="#contact">Get Directions</a>
+        </div>
+        <div class="rating-row">
+          <span class="stars">★★★★★</span>
+          <span class="rn">4.7</span>
+          <span class="rs">from 65 Google reviews</span>
+        </div>
+      </div>
+      <div class="gauge-card reveal">
+        <div class="tag"><span>Workshop Status</span><span class="live">● Open Now</span></div>
+        <div class="gauge-row"><span class="k">Closes Today</span><span class="v">8:00 PM</span></div>
+        <div class="gauge-row"><span class="k">Rating</span><span class="v amber">4.7 / 5.0</span></div>
+        <div class="gauge-row"><span class="k">Reviews</span><span class="v">65</span></div>
+        <div class="gauge-row"><span class="k">Location</span><span class="v">Street 3A, Umm Ramool</span></div>
+        <div class="gauge-row"><span class="k">Speciality</span><span class="v">Dent &amp; Paint</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="hazard"></div>
+
+  <div class="stats">
+    <div class="wrap">
+      <div class="stat reveal"><div class="num">4.7</div><div class="lbl">Average Rating</div></div>
+      <div class="stat reveal"><div class="num">65</div><div class="lbl">Verified Reviews</div></div>
+      <div class="stat reveal"><div class="num">15+</div><div class="lbl">Years Serving Regulars</div></div>
+      <div class="stat reveal"><div class="num">8</div><div class="lbl">Core Services</div></div>
+    </div>
+  </div>
+
+  <section id="services">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow">What We Fix</div>
+        <h2>Full workshop, one address</h2>
+        <p>From a small dent to a full respray, our team handles body, paint and mechanical work under one roof — no bouncing between shops.</p>
+      </div>
+      <div class="svc-grid reveal">
+        <div class="svc-card"><span class="n">01</span>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M8 12a4 4 0 118 0"/></svg>
+          <h3>Dent Repair</h3><p>Panel beating and smart repair for dings, dents and creases, restored to factory line.</p>
+        </div>
+        <div class="svc-card"><span class="n">02</span>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 16l4-9h10l4 9"/><path d="M3 16h18v3H3z"/></svg>
+          <h3>Paint &amp; Bodywork</h3><p>Colour-matched respraying, touch-ups and full body paint jobs.</p>
+        </div>
+        <div class="svc-card"><span class="n">03</span>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="4"/></svg>
+          <h3>AC Repair</h3><p>Leak detection and regassing — found fast, fixed properly, no guesswork.</p>
+        </div>
+        <div class="svc-card"><span class="n">04</span>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 12h16M4 6h16M4 18h16"/></svg>
+          <h3>Mechanical &amp; Electrical</h3><p>Engine, electrical faults and general servicing by experienced technicians.</p>
+        </div>
+        <div class="svc-card"><span class="n">05</span>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/></svg>
+          <h3>Suspension Repair</h3><p>Ride and handling faults diagnosed and corrected, front to rear.</p>
+        </div>
+        <div class="svc-card"><span class="n">06</span>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12l5 5L20 7"/></svg>
+          <h3>Ceramic Coating</h3><p>Long-lasting paint protection with a deep, durable finish.</p>
+        </div>
+        <div class="svc-card"><span class="n">07</span>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 18h6M10 22h4M12 2a7 7 0 00-4 12.7V17h8v-2.3A7 7 0 0012 2z"/></svg>
+          <h3>Headlight Polishing</h3><p>Clears out yellowing and fogging for full night-time visibility.</p>
+        </div>
+        <div class="svc-card"><span class="n">08</span>
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16"/></svg>
+          <h3>Engine Detailing</h3><p>Full bay clean-up and detail, done alongside your service.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="hazard"></div>
+
+  <section id="about">
+    <div class="wrap about">
+      <div class="about-visual reveal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M3 21h18M5 21V10l7-6 7 6v11M9 21v-6h6v6"/></svg>
+      </div>
+      <div class="about-copy reveal">
+        <div class="eyebrow">Why Regulars Stay</div>
+        <h2 style="font-size:clamp(28px,3.4vw,40px); margin-bottom:22px;">Run the way a neighbourhood garage should be</h2>
+        <p>Customers keep coming back to Sun Shine Garage for the same reason, year after year: straight answers, fair pricing and work that's done properly the first time. It's a small team that treats every car like it matters, whether the job is a two-hour paint touch-up or a full mechanical overhaul.</p>
+        <p>Several long-time customers mention the same thing — being picked up and dropped home while their car is being repaired, and getting a clear, honest quote before any work starts.</p>
+        <ul class="checklist">
+          <li><span class="mark">✓</span>Transparent quotes before work begins</li>
+          <li><span class="mark">✓</span>Skilled, experienced technicians on every job</li>
+          <li><span class="mark">✓</span>Pick-up and drop-off for customers nearby</li>
+          <li><span class="mark">✓</span>Fair, cost-effective pricing on parts and labour</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="hazard"></div>
+
+  <section id="reviews">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow">From Google Reviews</div>
+        <h2>What customers say</h2>
+        <p>A 4.7 rating across 65 reviews — a few of the recurring themes, in their words.</p>
+      </div>
+      <div class="testi-grid reveal">
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p>Praised the garage's honesty and transparency, describing being personally dropped off and picked up while a dent repair was completed.</p>
+          <div class="testi-foot"><span class="name">M. BE</span><span class="meta">10 months ago</span></div>
+        </div>
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p>Called out a fair price and professional finish after paint touch-ups, rim respraying and a small dent repair.</p>
+          <div class="testi-foot"><span class="name">Mike</span><span class="meta">Long-time customer</span></div>
+        </div>
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p>Highlighted an AC leak that two other workshops couldn't find, which Sun Shine located and repaired quickly.</p>
+          <div class="testi-foot"><span class="name">David Ray</span><span class="meta">Local Guide</span></div>
+        </div>
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p>Described the team as hassle-free and cost-effective, with timely updates throughout the repair.</p>
+          <div class="testi-foot"><span class="name">Amer Farooq</span><span class="meta">Verified review</span></div>
+        </div>
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p>Called it a trusted garage that delivers genuine peace of mind and good value for money.</p>
+          <div class="testi-foot"><span class="name">Shafi Ahmed</span><span class="meta">Local Guide</span></div>
+        </div>
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p>Said this is one of the most honest workshops they've dealt with anywhere in Dubai.</p>
+          <div class="testi-foot"><span class="name">Murat Ozturk</span><span class="meta">Local Guide</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ctaband">
+    <div class="wrap" style="padding:100px 32px;">
+      <h2 class="reveal">Bring your car in today</h2>
+      <p class="reveal">Open now · Closes 8 PM · Street 3A, Umm Ramool, Dubai</p>
+      <div class="cta-actions reveal">
+        <a class="btn btn-amber" href="tel:+971527222949">Call +971 52 722 2949</a>
+        <a class="btn btn-ghost" href="https://maps.google.com" target="_blank" rel="noopener">Open in Maps</a>
+      </div>
+    </div>
+  </div>
+
+  <footer id="contact">
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <h4>Sun Shine Garage</h4>
+          <p>35860 – Street No. 3A<br>Street, Umm Ramool<br>Dubai, United Arab Emirates</p>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <div class="flinks">
+            <a href="tel:+971527222949">+971 52 722 2949</a>
+            <a href="#">69H4+PP Dubai, UAE</a>
+          </div>
+        </div>
+        <div>
+          <h4>Hours</h4>
+          <p>Open daily<br>Closes 8:00 PM</p>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>© 2026 Sun Shine Garage LLC. All rights reserved.</span>
+        <span>Umm Ramool, Dubai — Auto Repair Shop</span>
+      </div>
+    </div>
+  </footer>
+
+<script>
+  // remove door overlay after animation completes
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      const overlay = document.getElementById('door-overlay');
+      if(overlay){ overlay.style.display = 'none'; }
+    }, 950);
+  });
+
+  // header shrink on scroll
+  const header = document.getElementById('siteHeader');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
